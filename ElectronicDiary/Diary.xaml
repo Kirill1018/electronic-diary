@@ -1,0 +1,49 @@
+﻿<Page x:Class="ElectronicDiary.Diary"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ElectronicDiary"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="Diary">
+    <TabControl>
+        <TabItem>
+            <TabItem.Header>
+                <TextBlock>дневник</TextBlock>
+            </TabItem.Header>
+            <TabItem.Content>
+                <Grid>
+                    <TextBlock Width="210" Height="30" Margin="-300, -300, 0, 0">пройденные предметы</TextBlock>
+                    <TextBlock Width="210" Height="30" Margin="420, -300, 0, 0">актуальные предметы</TextBlock>
+                    <DataGrid Width="330" Height="300" Margin="-300, 0, 0, 0"
+             x:Name="endSubj"></DataGrid>
+                    <DataGrid Width="330" Height="300" Margin="420, 0, 0, 0"
+             x:Name="actSubj"></DataGrid>
+                </Grid>
+            </TabItem.Content>
+        </TabItem>
+        <TabItem>
+            <TabItem.Header>
+                <TextBlock>домашние задания</TextBlock>
+            </TabItem.Header>
+            <TabItem.Content>
+                <ScrollViewer>
+                    <Grid>
+                        <TextBlock Height="30" Margin="600, -1110, 0, 0">домашние задания, сданные на положительную оценку</TextBlock>
+                        <DataGrid Width="600" Height="300" Margin="0, -810, 0, 0"
+                                  x:Name="homWithPosMark"></DataGrid>
+                        <TextBlock Height="30" Margin="600, -300, 0, 0">домашние задания, сданные на плохую оценку, требуется пересдать</TextBlock>
+                        <DataGrid Width="600" Height="300" Margin="0, 30, 0, 0"
+                                  x:Name="homWithBadMark"></DataGrid>
+                        <TextBlock Height="30" Margin="600, 600, 0, 0">несданные домашние задания, но срок ещё не подошёл</TextBlock>
+                        <DataGrid Width="600" Height="300" Margin="0, 930, 0, 0"
+                                  x:Name="homWhichMustBeSubm"></DataGrid>
+                        <Button Width="300" Height="30" Margin="0, 1320, 0, 0"
+                                Click="Button_Click">начать выполнение выбранного задания</Button>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem.Content>
+        </TabItem>
+    </TabControl>
+</Page>
