@@ -1,16 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using System.Data;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media
-    .Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ElectronicDiary
 {
@@ -26,25 +17,27 @@ namespace ElectronicDiary
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            SqlConnection conn = Header.Conn;
-            conn.Close();
-            conn.Open();
+            SqlConnection sqlConnection = Header.SqlConnection;
+            sqlConnection.Close();
+            sqlConnection.Open();
             string sql = "select * from users";
-            IDbCommand command = new SqlCommand(sql, conn);
-            IDataReader reader = command.ExecuteReader();
+            IDbCommand iDbCommand = new SqlCommand(sql, sqlConnection);
+            IDataReader iDataReader = iDbCommand.ExecuteReader();
+            int? id = null;
             bool isEnt = false;
-            while (reader.Read())
-            {
-                string customer = reader.GetString(1), passcode = reader.GetString(2);
-                bool isAppr = reader.GetBoolean(3);
-                if (customer == user.Text && passcode == parole.Text && isAppr) isEnt = true;
-            }
-            reader.Close();
-            NavigationWindow win = new NavigationWindow();
-            win.Content = new Diary();
+            while (iDataReader.Read()) if (iDataReader.GetString(1) == user
+                    .Text && iDataReader.GetString(2) == parole.Text
+                    && iDataReader.GetBoolean(3))
+                {
+                    id = iDataReader.GetInt32(0);
+                    isEnt = true;
+                }
+            iDataReader.Close();
             if (isEnt)
             {
-                win.Show();
+                NavigationWindow navigationWindow = new NavigationWindow();
+                navigationWindow.Content = new Diary(id);
+                navigationWindow.Show();
                 Close();
             }
         }

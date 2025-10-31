@@ -10,17 +10,25 @@
     <TabControl>
         <TabItem>
             <TabItem.Header>
-                <TextBlock>дневник</TextBlock>
+                <TextBlock>предметы</TextBlock>
             </TabItem.Header>
             <TabItem.Content>
-                <Grid>
-                    <TextBlock Width="210" Height="30" Margin="-300, -300, 0, 0">пройденные предметы</TextBlock>
-                    <TextBlock Width="210" Height="30" Margin="420, -300, 0, 0">актуальные предметы</TextBlock>
-                    <DataGrid Width="330" Height="300" Margin="-300, 0, 0, 0"
-             x:Name="endSubj"></DataGrid>
-                    <DataGrid Width="330" Height="300" Margin="420, 0, 0, 0"
-             x:Name="actSubj"></DataGrid>
-                </Grid>
+                <StackPanel>
+                    <TextBlock>пройденные предметы</TextBlock>
+                    <ListView x:Name="endSubj"></ListView>
+                    <TextBlock>актуальные предметы</TextBlock>
+                    <ListView x:Name="actSubj"></ListView>
+                </StackPanel>
+            </TabItem.Content>
+        </TabItem>
+        <TabItem>
+            <TabItem.Header>
+                <TextBlock>уроки</TextBlock>
+            </TabItem.Header>
+            <TabItem.Content>
+                <StackPanel>
+                    <DataGrid x:Name="tutorials"></DataGrid>
+                </StackPanel>
             </TabItem.Content>
         </TabItem>
         <TabItem>
@@ -28,21 +36,17 @@
                 <TextBlock>домашние задания</TextBlock>
             </TabItem.Header>
             <TabItem.Content>
-                <ScrollViewer>
-                    <Grid>
-                        <TextBlock Height="30" Margin="600, -1110, 0, 0">домашние задания, сданные на положительную оценку</TextBlock>
-                        <DataGrid Width="600" Height="300" Margin="0, -810, 0, 0"
-                                  x:Name="homWithPosMark"></DataGrid>
-                        <TextBlock Height="30" Margin="600, -300, 0, 0">домашние задания, сданные на плохую оценку, требуется пересдать</TextBlock>
-                        <DataGrid Width="600" Height="300" Margin="0, 30, 0, 0"
-                                  x:Name="homWithBadMark"></DataGrid>
-                        <TextBlock Height="30" Margin="600, 600, 0, 0">несданные домашние задания, но срок ещё не подошёл</TextBlock>
-                        <DataGrid Width="600" Height="300" Margin="0, 930, 0, 0"
-                                  x:Name="homWhichMustBeSubm"></DataGrid>
-                        <Button Width="300" Height="30" Margin="0, 1320, 0, 0"
-                                Click="Button_Click">начать выполнение выбранного задания</Button>
-                    </Grid>
-                </ScrollViewer>
+                <StackPanel>
+                    <TextBlock>домашние задания, сданные на положительную оценку</TextBlock>
+                    <DataGrid x:Name="homWithPosMark"></DataGrid>
+                    <TextBlock>домашние задания, сданные на плохую оценку, требуется пересдать</TextBlock>
+                    <DataGrid x:Name="homWithBadMark"></DataGrid>
+                    <TextBlock>несданные домашние задания, но срок ещё не подошёл</TextBlock>
+                    <DataGrid x:Name="homNeedToBeSubm"></DataGrid>
+                    <Button Click="OnClickChosTask">выбранное задание</Button>
+                    <Button Click="OnClickUplChosHomForCheck">загрузить выбранную домашку на проверку</Button>
+                    <Button Click="OnClickComplChosHom">выполнить выбранную домашку</Button>
+                </StackPanel>
             </TabItem.Content>
         </TabItem>
     </TabControl>

@@ -1,16 +1,12 @@
-﻿<Window x:Class="ElectronicDiary.Work"
+﻿<Window x:Class="ElectronicDiary.Task"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ElectronicDiary"
         mc:Ignorable="d"
-        Title="домашка" Height="450" Width="800">
-    <StackPanel>
-        <ScrollViewer>
-            <TextBox x:Name="maintenance" Height="300"
-                     KeyDown="maintenance_KeyDown"></TextBox>
-        </ScrollViewer>
-        <Button Click="Button_Click">отправить</Button>
-    </StackPanel>
+        Title="задание" Height="450" Width="800">
+    <Grid>
+        <TextBlock x:Name="assignment"></TextBlock>
+    </Grid>
 </Window>

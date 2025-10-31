@@ -1,29 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ElectronicDiary
+﻿namespace ElectronicDiary
 {
-    public class Homework
+    internal class Homework
     {
-        public string? LessDate { get; set; }
-        public string? LessTheme { get; set; }
+        int Id { get; set; }
+        byte[]? BinFile { get; set; }
+        string? Content { get; set; }
+        string? Task { get; set; }
+        int? LessId { get; set; }
+        DateTime? Deadline { get; set; } = new DateTime();
+        int? SubjId { get; set; }
+        public string? DateTimeOfLess { get; set; }
+        public string? Theme { get; set; }
+        int? UserId { get; set; }
         public string? Teacher { get; set; }
-        public string? Task { get; set; }
         public int? Mark { get; set; }
         public string? Comment { get; set; }
-        public Homework(string? lessDate, string? lessTheme,
-            string? teacher, string? task,
-            int? mark, string? comment)
+        public Homework(int id, byte[]? binFile,
+            string? content, string? task,
+            int? lessId, DateTime? deadline,
+            int? subjId, string? dateTimeOfLess,
+            string? theme, int? userId,
+            string? teacher, int? mark,
+            string? comment)
         {
-            LessDate = lessDate;
-            LessTheme = lessTheme;
-            Teacher = teacher;
+            Id = id;
+            BinFile = binFile;
+            Content = content;
             Task = task;
+            LessId = lessId;
+            Deadline = deadline;
+            SubjId = subjId;
+            DateTimeOfLess = dateTimeOfLess;
+            Theme = theme;
+            UserId = userId;
+            Teacher = teacher;
             Mark = mark;
             Comment = comment;
         }
+        public int GetId() => this.Id;
+        public string? GetTask() => this.Task;
+        public void SetTask(string task) => this.Task = task;
+        public int? GetLessId() => this.LessId;
+        public void SetLessId(int lessId) => this.LessId = lessId;
+        public DateTime? GetDeadl() => this.Deadline;
+        public int? GetSubjId() => this.SubjId;
+        public void SetSubjId(int subjId) => this.SubjId = subjId;
+        public int? GetUserId() => this.UserId;
+        public void SetUserId(int userId) => this.UserId = userId;
     }
 }

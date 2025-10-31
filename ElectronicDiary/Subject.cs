@@ -1,27 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ElectronicDiary
+﻿namespace ElectronicDiary
 {
     internal class Subject
     {
+        int Id { get; set; }
         public string? Name { get; set; }
-        public string? Date { get; set; }
-        public string? Theme { get; set; }
-        public string? Teacher { get; set; }
-        public int Mark { get; set; }
-        public Subject(string? name, string? date,
-            string? theme, string? teacher,
-            int mark)
+        public Subject(int id, string? name)
         {
+            Id = id;
             Name = name;
-            Date = date;
-            Theme = theme;
-            Teacher = teacher;
-            Mark = mark;
         }
+        public int GetId() => this.Id;
     }
 }

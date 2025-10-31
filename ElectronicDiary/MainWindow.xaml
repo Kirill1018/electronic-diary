@@ -6,14 +6,11 @@
         xmlns:local="clr-namespace:ElectronicDiary"
         mc:Ignorable="d"
         Title="электронный дневник" Height="450" Width="800">
-    <Grid>
-        <TextBlock Width="120" Height="30">имя пользователя</TextBlock>
-        <TextBox Width="300" Height="30" Margin="180, 30, 0, 0"
-                 x:Name="user"></TextBox>
-        <TextBlock Width="120" Height="30" Margin="0, 120, 0, 0">пароль</TextBlock>
-        <TextBox Width="300" Height="30" Margin="180, 150, 0, 0"
-                 x:Name="parole"></TextBox>
-        <Button Width="120" Height="30" Margin="0, 210, 0, 0"
-                Click="Button_Click">войти</Button>
-    </Grid>
+    <StackPanel>
+        <TextBlock>имя пользователя</TextBlock>
+        <TextBox x:Name="user"></TextBox>
+        <TextBlock>пароль</TextBlock>
+        <TextBox x:Name="parole"></TextBox>
+        <Button Click="Button_Click">войти</Button>
+    </StackPanel>
 </Window>

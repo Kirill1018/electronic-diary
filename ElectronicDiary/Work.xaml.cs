@@ -1,19 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media
-    .Imaging;
-using System.Windows.Shapes;
 
 namespace ElectronicDiary
 {
@@ -22,25 +8,38 @@ namespace ElectronicDiary
     /// </summary>
     public partial class Work : Window
     {
-        Homework Act { get; set; } = new Homework(null, null,
-            null, null,
-            null, null);
-        public Work(Homework act)
+        int HomId { get; set; }
+        Diary Diary { get; set; }
+        public Work(int homId, Diary diary)
         {
             InitializeComponent();
-            this.Act = act;
-            workName.Text = this.Act
-                .Task;
+            this.HomId = homId;
+            this.Diary = diary;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            string text = workCont.Text;
-            if (text == String.Empty) return;
-            string query = $"insert into checking(name, content) values('{this.Act.Task}', '{text}')";
-            SqlCommand cmd = new SqlCommand(query, Header.Conn);
-            cmd.ExecuteNonQuery();
+            string? maintText = maintenance.Text;
+            string sql = "insert into checking(userId, homId, "
+                + $"content) values({this.Diary.Identifier}, {this.HomId}, "
+                + $"'{maintText}')";
+            if (maintText == string.Empty) return;
+            SqlCommand sqlCommand = new SqlCommand(sql, Header.SqlConnection);
+            sqlCommand.ExecuteNonQuery();
+            IDataSourc.Load(this.Diary);
             Close();
+        }
+
+        private void maintenance_KeyDown(object sender, System.Windows.Input
+            .KeyEventArgs e) { if (e.Key == System.Windows
+                .Input.Key.Enter)
+            {
+                int index = maintenance.SelectionStart;
+                string text = maintenance.Text;
+                maintenance.Text = text.Substring(0, index) + Environment
+                    .NewLine + text.Substring(index);
+                maintenance.SelectionStart = text.Length + 1;
+            }
         }
     }
 }
