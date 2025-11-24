@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Win32;
+using System.Data;
 using System.IO;
 using System.Windows.Controls;
 
@@ -15,7 +16,7 @@ namespace ElectronicDiary
         {
             InitializeComponent();
             this.Identifier = identifier;
-            IDataSourc.Load(this);
+            Header.Load(this);
         }
 
         private void OnClickChosTask(object sender, System.Windows.RoutedEventArgs e)
@@ -36,16 +37,19 @@ namespace ElectronicDiary
             OpenFileDialog openFileDialog = new OpenFileDialog();
             if (openFileDialog.ShowDialog() == true)
             {
-                FileStream fstream = File.OpenRead(openFileDialog.FileName);
-                byte[] buffer = new byte[fstream.Length];
-                fstream.Read(buffer, 0,
-                    buffer.Length);
+                SqlConnection sqlConnection = Header.SqlConnection;
+                SqlTransaction transaction = sqlConnection.BeginTransaction();
                 string sql = "insert into checking(userId, homId, "
                     + $"binFile, lodgeName) values({this.Identifier}, {homework.GetId()}, "
-                    + $"convert(varbinary(max), '{buffer}'), '{openFileDialog.SafeFileName}')";
-                SqlCommand sqlCommand = new SqlCommand(sql, Header.SqlConnection);
+                    + $"@file, '{openFileDialog.SafeFileName}')";
+                SqlCommand sqlCommand = new SqlCommand(sql, sqlConnection,
+                    transaction);
+                sqlCommand.Parameters.Add("@file", SqlDbType
+                    .VarBinary).Value = File.ReadAllBytes(openFileDialog
+                    .FileName);
                 sqlCommand.ExecuteNonQuery();
-                IDataSourc.Load(this);
+                transaction.Commit();
+                Header.Load(this);
             }
         }
 

@@ -21,12 +21,13 @@ namespace ElectronicDiary
         {
             string? maintText = maintenance.Text;
             string sql = "insert into checking(userId, homId, "
-                + $"content) values({this.Diary.Identifier}, {this.HomId}, "
+                + $"content) values({this.Diary.Identifier}, {this
+                .HomId}, "
                 + $"'{maintText}')";
             if (maintText == string.Empty) return;
             SqlCommand sqlCommand = new SqlCommand(sql, Header.SqlConnection);
             sqlCommand.ExecuteNonQuery();
-            IDataSourc.Load(this.Diary);
+            Header.Load(this.Diary);
             Close();
         }
 
