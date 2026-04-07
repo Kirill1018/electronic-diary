@@ -1,6 +1,4 @@
-﻿using Microsoft.Data.SqlClient;
-using Microsoft.Win32;
-using System.Data;
+﻿using Microsoft.Win32;
 using System.IO;
 using System.Windows.Controls;
 
@@ -37,18 +35,15 @@ namespace ElectronicDiary
             OpenFileDialog openFileDialog = new OpenFileDialog();
             if (openFileDialog.ShowDialog() == true)
             {
-                SqlConnection sqlConnection = Header.SqlConnection;
-                SqlTransaction transaction = sqlConnection.BeginTransaction();
-                string sql = "insert into checking(userId, homId, "
-                    + $"binFile, lodgeName) values({this.Identifier}, {homework.GetId()}, "
-                    + $"@file, '{openFileDialog.SafeFileName}')";
-                SqlCommand sqlCommand = new SqlCommand(sql, sqlConnection,
-                    transaction);
-                sqlCommand.Parameters.Add("@file", SqlDbType
-                    .VarBinary).Value = File.ReadAllBytes(openFileDialog
+                checking checking = new checking();
+                checking.userId = (int)this.Identifier!;
+                checking.homId = homework.GetId();
+                checking.binFile = File.ReadAllBytes(openFileDialog
                     .FileName);
-                sqlCommand.ExecuteNonQuery();
-                transaction.Commit();
+                checking.lodgeName = openFileDialog.SafeFileName;
+                Header.Db.checking
+                    .InsertOnSubmit(checking);
+                Header.Db.SubmitChanges();
                 Header.Load(this);
             }
         }

@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="electronic diary" Class="DataClassesDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="AppSettings" ConnectionString="Data Source=desktop-neuqaj1\sqlexpress;Initial Catalog=&quot;electronic diary&quot;;Integrated Security=True;Encrypt=True;Trust Server Certificate=True" SettingsObjectName="ElectronicDiary.Properties.Settings" SettingsPropertyName="electronic_diaryConnectionString" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.checking" Member="checking">
+    <Type Name="checking">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="userId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="homId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="binFile" Type="System.Data.Linq.Binary" DbType="VarBinary(MAX)" CanBeNull="true" UpdateCheck="Never" />
+      <Column Name="lodgeName" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
+      <Column Name="content" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
+      <Column Name="comment" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
+      <Column Name="mark" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Association Name="homeworks_checking" Member="homeworks" ThisKey="homId" OtherKey="Id" Type="homeworks" IsForeignKey="true" />
+      <Association Name="users_checking" Member="users" ThisKey="userId" OtherKey="Id" Type="users" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.currSubj" Member="currSubj">
+    <Type Name="currSubj">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="name" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Column Name="groupId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="userId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Association Name="groups_currSubj" Member="groups" ThisKey="groupId" OtherKey="Id" Type="groups" IsForeignKey="true" />
+      <Association Name="users_currSubj" Member="users" ThisKey="userId" OtherKey="Id" Type="users" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.groups" Member="groups">
+    <Type Name="groups">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="name" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Column Name="isArch" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Association Name="groups_currSubj" Member="currSubj" ThisKey="Id" OtherKey="groupId" Type="currSubj" />
+      <Association Name="groups_passSubj" Member="passSubj" ThisKey="Id" OtherKey="groupId" Type="passSubj" />
+      <Association Name="groups_users" Member="users" ThisKey="Id" OtherKey="groupId" Type="users" />
+    </Type>
+  </Table>
+  <Table Name="dbo.homeworks" Member="homeworks">
+    <Type Name="homeworks">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="task" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Column Name="lessId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="deadline" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Association Name="homeworks_checking" Member="checking" ThisKey="Id" OtherKey="homId" Type="checking" />
+      <Association Name="lessons_homeworks" Member="lessons" ThisKey="lessId" OtherKey="Id" Type="lessons" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.lessons" Member="lessons">
+    <Type Name="lessons">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="isPass" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="subjId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="date" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="theme" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Association Name="lessons_homeworks" Member="homeworks" ThisKey="Id" OtherKey="lessId" Type="homeworks" />
+      <Association Name="lessons_marks" Member="marks" ThisKey="Id" OtherKey="lessId" Type="marks" />
+    </Type>
+  </Table>
+  <Table Name="dbo.marks" Member="marks">
+    <Type Name="marks">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="number" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="lessId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="userId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Association Name="lessons_marks" Member="lessons" ThisKey="lessId" OtherKey="Id" Type="lessons" IsForeignKey="true" />
+      <Association Name="users_marks" Member="users" ThisKey="userId" OtherKey="Id" Type="users" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.passSubj" Member="passSubj">
+    <Type Name="passSubj">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="name" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Column Name="groupId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="isArch" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="userId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Association Name="groups_passSubj" Member="groups" ThisKey="groupId" OtherKey="Id" Type="groups" IsForeignKey="true" />
+      <Association Name="users_passSubj" Member="users" ThisKey="userId" OtherKey="Id" Type="users" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.statuses" Member="statuses">
+    <Type Name="statuses">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="name" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+    </Type>
+  </Table>
+  <Table Name="dbo.users" Member="users">
+    <Type Name="users">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="username" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Column Name="password" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Column Name="isStud" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="isTeach" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="groupId" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Association Name="users_checking" Member="checking" ThisKey="Id" OtherKey="userId" Type="checking" />
+      <Association Name="users_currSubj" Member="currSubj" ThisKey="Id" OtherKey="userId" Type="currSubj" />
+      <Association Name="users_marks" Member="marks" ThisKey="Id" OtherKey="userId" Type="marks" />
+      <Association Name="users_passSubj" Member="passSubj" ThisKey="Id" OtherKey="userId" Type="passSubj" />
+      <Association Name="groups_users" Member="groups" ThisKey="groupId" OtherKey="Id" Type="groups" IsForeignKey="true" />
+    </Type>
+  </Table>
+</Database>

@@ -1,9 +1,11 @@
-﻿namespace ElectronicDiary
+﻿using System.Data.Linq;
+
+namespace ElectronicDiary
 {
     internal class Homework
     {
         int Id { get; set; }
-        byte[]? BinFile { get; set; }
+        Binary? BinFile { get; set; }
         string? Content { get; set; }
         string? Task { get; set; }
         int? LessId { get; set; }
@@ -15,7 +17,7 @@
         public string? Teacher { get; set; }
         public int? Mark { get; set; }
         public string? Comment { get; set; }
-        public Homework(int id, byte[]? binFile,
+        public Homework(int id, Binary? binFile,
             string? content, string? task,
             int? lessId, DateTime? deadline,
             int? subjId, string? dateTimeOfLess,
@@ -39,13 +41,13 @@
         }
         public int GetId() => this.Id;
         public string? GetTask() => this.Task;
-        public void SetTask(string task) => this.Task = task;
+        public void SetTask(string? task) => this.Task = task;
         public int? GetLessId() => this.LessId;
-        public void SetLessId(int lessId) => this.LessId = lessId;
+        public void SetLessId(int? lessId) => this.LessId = lessId;
         public DateTime? GetDeadl() => this.Deadline;
         public int? GetSubjId() => this.SubjId;
         public void SetSubjId(int subjId) => this.SubjId = subjId;
         public int? GetUserId() => this.UserId;
-        public void SetUserId(int userId) => this.UserId = userId;
+        public void SetUserId(int? userId) => this.UserId = userId;
     }
 }

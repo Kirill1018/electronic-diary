@@ -1,105 +1,94 @@
-﻿using Microsoft.Data.SqlClient;
-using System.Data;
-
 namespace ElectronicDiary
 {
     internal class Header
     {
-        public static SqlConnection SqlConnection { get; } = new SqlConnection("Data Source=desktop-neuqaj1\\sqlexpress;Initial Catalog=\"electronic diary\";Integrated Security=True;Trust Server Certificate=True");
+        public static DataClassesDataContext Db { get; } = new DataClassesDataContext();
         public static void Load(Diary diary)
         {
-            string sql = "select * from passSubj where Id = (select Id from passSubj where "
-                + $"groupId = ({IDataSourc.SelGroupIdFromUs(diary.Identifier)}) and isArch = 'false')";
-            IDbCommand iDbCommand = new SqlCommand(sql, SqlConnection);
-            IDataReader iDataReader = iDbCommand.ExecuteReader();
-            List<Subject> subjects1 = new List<Subject>(), subjects2 = new List<Subject>();
-            List<string> subjNam1 = new List<string>(), subjNam2 = new List<string>();
-            while (iDataReader.Read()) IDataSourc.Add(subjects1, subjNam1,
-                iDataReader);
-            iDataReader.Close();
-            diary.endSubj.ItemsSource = subjNam1;
-            sql = "select * from currSubj where Id = (select Id from currSubj where "
-                + $"groupId = ({IDataSourc.SelGroupIdFromUs(diary.Identifier)}))";
-            iDbCommand = new SqlCommand(sql, SqlConnection);
-            iDataReader = iDbCommand.ExecuteReader();
-            while (iDataReader.Read()) IDataSourc.Add(subjects2, subjNam2,
-                iDataReader);
-            iDataReader.Close();
-            diary.actSubj.ItemsSource = subjNam2;
-            List<Subject>[] subjects = { subjects1, subjects2 };
+            List<users> users = Db.users.ToList<users>();
+            int? identifier = diary.Identifier;
+            users user = users.Find(customer => customer.Id == identifier)!;
+            int? groupId = user.groupId;
+            List<passSubj> passSubj = Db.passSubj.ToList<passSubj>(), passSubjByGroup = passSubj
+                .FindAll(subjects => (subjects.groupId == groupId && subjects.isArch == false));
+            List<string> namOfPassSubj = new List<string>(), namOfCurrSubj = new List<string>();
+            foreach (passSubj subject in passSubjByGroup) namOfPassSubj.Add(subject.name);
+            diary.endSubj.ItemsSource = namOfPassSubj;
+            List<currSubj> currSubj = Db.currSubj.ToList<currSubj>(), currSubjByGroup = currSubj
+                .FindAll(subjects => subjects.groupId == groupId);
+            foreach (currSubj subject in currSubjByGroup) namOfCurrSubj.Add(subject.name);
+            diary.actSubj.ItemsSource = namOfCurrSubj;
+            List<lessons> lessons = Db.lessons.ToList<lessons>();
             List<Lesson> tutList = new List<Lesson>();
-            foreach (List<Subject> items in subjects) foreach (Subject subject in items)
-                {
-                    sql = $"select * from lessons where isPass = 'true' and subjId = {subject.GetId()}";
-                    iDbCommand = new SqlCommand(sql, SqlConnection);
-                    iDataReader = iDbCommand.ExecuteReader();
-                    while (iDataReader.Read())
-                    {
-                        DateTime dateTime = iDataReader.GetDateTime(3);
-                        Lesson lesson = new Lesson(iDataReader.GetInt32(0), iDataReader.GetInt32(2),
-                            $"{dateTime.Day}.{dateTime.Month}.{dateTime
-                            .Year}", iDataReader.GetString(4),
-                            null, null);
-                        tutList.Add(lesson);
-                    }
-                    iDataReader.Close();
-                }
-            string[] tables = { "passSubj", "currSubj" };
-            foreach (Lesson lesson in tutList) foreach (string table in tables)
-                {
-                    sql = $"select * from users where Id = (select userId from {table} where Id = {lesson.GetSubjId()})";
-                    iDbCommand = new SqlCommand(sql, SqlConnection);
-                    iDataReader = iDbCommand.ExecuteReader();
-                    while (iDataReader.Read()) lesson.Teacher = iDataReader
-                            .GetString(1);
-                    iDataReader.Close();
-                }
+            foreach (passSubj subject in passSubjByGroup)
+            {
+                List<lessons> lessonsBySubj = lessons.FindAll(tutorial => (tutorial.isPass && tutorial
+                .subjId == subject.Id));
+                IDataSourc.Add(lessonsBySubj, tutList);
+            }
+            foreach (currSubj subject in currSubjByGroup)
+            {
+                List<lessons> lessonsBySubj = lessons.FindAll(tutorial => (tutorial.isPass && tutorial
+                .subjId == subject.Id));
+                IDataSourc.Add(lessonsBySubj, tutList);
+            }
             foreach (Lesson lesson in tutList)
             {
-                sql = $"select * from marks where Id = (select Id from marks where lessId = {lesson.GetId()} and userId = {diary.Identifier})";
-                iDbCommand = new SqlCommand(sql, SqlConnection);
-                iDataReader = iDbCommand.ExecuteReader();
-                while (iDataReader.Read()) lesson.Mark = iDataReader
-                        .GetInt32(1);
-                iDataReader.Close();
+                int subjId = lesson.GetSubjId();
+                passSubj? endSubj = passSubj.Find(subject => subject.Id == subjId);
+                if (endSubj is null)
+                {
+                    currSubj? actSubj = currSubj.Find(subject => subject.Id == subjId);
+                    users? client = actSubj is null ? null : users.Find(customer => customer.Id == actSubj
+                    .userId);
+                    lesson.Teacher = client is null ? null : client.username;
+                }
+                else
+                {
+                    users? client = users.Find(customer => customer.Id == endSubj
+                    .userId);
+                    lesson.Teacher = client is null ? null : client.username;
+                }
+            }
+            List<marks> marks = Db.marks.ToList<marks>();
+            foreach (Lesson lesson in tutList)
+            {
+                marks? mark = marks.Find(rating => (rating.lessId == lesson
+                .GetId() && rating.userId == identifier));
+                lesson.Mark = mark is null ? null : mark.number;
             }
             diary.tutorials.ItemsSource = tutList;
-            sql = $"select * from checking where userId = {diary.Identifier}";
-            iDbCommand = new SqlCommand(sql, SqlConnection);
-            iDataReader = iDbCommand.ExecuteReader();
+            List<checking> checkings = Db.checking.ToList<checking>(), checkByUs = checkings
+                .FindAll(homework => homework.userId == identifier);
             List<Homework> works = new List<Homework>(), worksWithPosMark = new List<Homework>(),
                 worksWithBadMark = new List<Homework>(), worksNeedToBeSubm = new List<Homework>();
-            while (iDataReader.Read())
+            foreach (checking checking in checkings)
             {
-                DBNull dBNull = DBNull.Value;
-                byte[]? binFile = (iDataReader["binFile"] == dBNull) ? null : (byte[]?)iDataReader["binFile"];
-                string? content = (iDataReader["content"] == dBNull) ? null : iDataReader.GetString(5), comment = (iDataReader["comment"] == dBNull) ? null : iDataReader.GetString(6);
-                int? mark = (iDataReader["mark"] == dBNull) ? null : iDataReader.GetInt32(7);
-                Homework homework = new Homework(iDataReader.GetInt32(2), binFile,
-                    content, null,
+                Homework homework = new Homework(checking.homId, checking.binFile,
+                    checking.content, null,
                     null, null,
                     null, null,
                     null, null,
-                    null, mark,
-                    comment);
+                    null, checking.mark,
+                    checking.comment);
                 works.Add(homework);
             }
-            iDataReader.Close();
+            List<homeworks> homeworks = Db.homeworks.ToList<homeworks>();
             foreach (Homework homework in works)
             {
-                sql = $"select * from homeworks where Id = {homework.GetId()}";
-                iDbCommand = new SqlCommand(sql, SqlConnection);
-                iDataReader = iDbCommand.ExecuteReader();
-                while (iDataReader.Read())
-                {
-                    homework.SetTask(iDataReader.GetString(1));
-                    homework.SetLessId(iDataReader.GetInt32(2));
-                }
-                iDataReader.Close();
+                homeworks? work = homeworks.Find(task => task.Id == homework
+                .GetId());
+                homework.SetTask(work is null ? null : work.task);
+                homework.SetLessId(work is null ? null : work.lessId);
             }
-            foreach (Homework homework in works) IDataSourc.SelFromLess(homework);
-            foreach (string table in tables) foreach (Homework homework in works) IDataSourc.SelFromSubj(table, homework);
-            foreach (string table in tables) foreach (Homework homework in works) IDataSourc.SelFromUs(homework.GetUserId(), homework);
+            foreach (Homework homework in works)
+            {
+                try { IDataSourc.SelFromLess(lessons, homework); }
+                catch (NullReferenceException) { }
+            }
+            foreach (Homework homework in works) IDataSourc.SelFromSubj(homework, passSubj,
+                currSubj);
+            foreach (Homework homework in works) IDataSourc.SelFromUs(users, homework);
             foreach (Homework homework in works)
             {
                 int? mark = homework.Mark;
@@ -110,41 +99,46 @@ namespace ElectronicDiary
             diary.homWithBadMark.ItemsSource = worksWithBadMark;
             foreach (Lesson lesson in tutList)
             {
-                int lessId = lesson.GetId();
-                sql = $"select * from homeworks where lessId = {lessId}";
-                iDbCommand = new SqlCommand(sql, SqlConnection);
-                iDataReader = iDbCommand.ExecuteReader();
-                while (iDataReader.Read())
+                List<homeworks> tasks = homeworks.FindAll(homework => homework.lessId == lesson
+                .GetId());
+                foreach (homeworks task in tasks)
                 {
-                    Homework homework = new Homework(iDataReader.GetInt32(0), null,
-                        null, iDataReader.GetString(1),
-                        lessId, iDataReader.GetDateTime(3),
+                    Homework homework = new Homework(task.Id, null,
+                        null, task.task,
+                        lesson.GetId(), task.deadline,
                         null, null,
                         null, null,
                         null, null,
                         null);
                     worksNeedToBeSubm.Add(homework);
                 }
-                iDataReader.Close();
             }
             foreach (Homework homework in works) for (int i = 0; i < worksNeedToBeSubm.Count; i++) if (homework.GetId() == worksNeedToBeSubm[i]
-                        .GetId()) worksNeedToBeSubm.RemoveAt(i);
-            foreach (Homework homework in worksNeedToBeSubm) IDataSourc.SelFromLess(homework);
-            foreach (string table in tables) foreach (Homework homework in worksNeedToBeSubm) IDataSourc.SelFromSubj(table, homework);
-            foreach (string table in tables) foreach (Homework homework in worksNeedToBeSubm) IDataSourc.SelFromUs(homework.GetUserId(), homework);
-            int count = worksNeedToBeSubm.Count;
-            for (int i = 0; i < count; i++) if (worksNeedToBeSubm[i].GetDeadl() < DateTime.Now) worksNeedToBeSubm
-                        .RemoveAt(i);
-            for (int i = 0; i < count; i++)
+                        .GetId())
+                    {
+                        worksNeedToBeSubm.RemoveAt(i);
+                        i--;
+                    }
+            foreach (Homework homework in worksNeedToBeSubm)
             {
-                sql = $"select * from checking";
-                iDbCommand = new SqlCommand(sql, SqlConnection);
-                iDataReader = iDbCommand.ExecuteReader();
-                while (iDataReader.Read()) if (iDataReader.GetInt32(1) == diary
-                        .Identifier && iDataReader.GetInt32(2) == worksNeedToBeSubm[i].GetId()) worksNeedToBeSubm
-                            .RemoveAt(i);
-                iDataReader.Close();
+                try { IDataSourc.SelFromLess(lessons, homework); }
+                catch (NullReferenceException) { }
             }
+            foreach (Homework homework in worksNeedToBeSubm) IDataSourc.SelFromSubj(homework, passSubj,
+                currSubj);
+            foreach (Homework homework in worksNeedToBeSubm) IDataSourc.SelFromUs(users, homework);
+            for (int i = 0; i < worksNeedToBeSubm.Count; i++) if (worksNeedToBeSubm[i].GetDeadl() < DateTime
+                    .Now)
+                {
+                    worksNeedToBeSubm.RemoveAt(i);
+                    i--;
+                }
+            for (int i = 0; i < worksNeedToBeSubm.Count; i++) foreach (checking checking in checkings) if (checking.userId == identifier && checking
+                        .homId == worksNeedToBeSubm[i].GetId())
+                    {
+                        worksNeedToBeSubm.RemoveAt(i);
+                        i--;
+                    }
             diary.homNeedToBeSubm.ItemsSource = worksNeedToBeSubm;
         }
     }

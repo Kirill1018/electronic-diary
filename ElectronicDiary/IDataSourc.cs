@@ -1,49 +1,44 @@
-﻿using Microsoft.Data.SqlClient;
-using System.Data;
-
-namespace ElectronicDiary
+﻿namespace ElectronicDiary
 {
     internal interface IDataSourc
     {
-        public static string SelGroupIdFromUs(int? identifier) => $"select groupId from users where Id = {identifier}";
-        public static void Add(List<Subject> subjects, List<string> names,
-            IDataReader dataReader)
-        {
-            Subject subject = new Subject(dataReader.GetInt32(0), dataReader.GetString(1));
-            subjects.Add(subject);
-            names.Add(subject.Name!);
-        }
-        public static void SelFromLess(Homework work)
-        {
-            string query = $"select * from lessons where Id = {work.GetLessId()}";
-            IDbCommand iDbCommand = new SqlCommand(query, Header.SqlConnection);
-            IDataReader iDataReader = iDbCommand.ExecuteReader();
-            while (iDataReader.Read())
+        public static void Add(List<lessons> lessBySubj, List<Lesson> lessons) { foreach (lessons lesson in lessBySubj)
             {
-                work.SetSubjId(iDataReader.GetInt32(2));
-                DateTime dateTime = iDataReader.GetDateTime(3);
-                work.DateTimeOfLess = $"{dateTime.Day}.{dateTime
-                    .Month}.{dateTime.Year}";
-                work.Theme = iDataReader.GetString(4);
+                DateTime dateTime = lesson.date;
+                Lesson tutorial = new Lesson(lesson.Id, lesson.subjId,
+                    $"{dateTime.Day}.{dateTime.Month}.{dateTime
+                    .Year}", lesson.theme,
+                    null, null);
+                lessons.Add(tutorial);
             }
-            iDataReader.Close();
         }
-        public static void SelFromSubj(string schedule, Homework work)
+        public static void SelFromLess(List<lessons> lessons, Homework homework)
         {
-            string query = $"select * from {schedule} where Id = {work.GetSubjId()}";
-            IDbCommand iDbCommand = new SqlCommand(query, Header.SqlConnection);
-            IDataReader iDataReader = iDbCommand.ExecuteReader();
-            while (iDataReader.Read()) work.SetUserId((int)iDataReader["userId"]);
-            iDataReader.Close();
+            lessons? lesson = lessons.Find(tutorial => tutorial.Id == homework
+                                    .GetLessId());
+            homework.SetSubjId(lesson!.subjId);
+            DateTime dateTime = lesson.date;
+            homework.DateTimeOfLess = $"{dateTime.Day}.{dateTime
+                .Month}.{dateTime.Year}";
+            homework.Theme = lesson.theme;
         }
-        public static void SelFromUs(int? identifier, Homework work)
+        public static void SelFromSubj(Homework homework, List<passSubj> passSubj,
+            List<currSubj> currSubj)
         {
-            string query = $"select * from users where Id = {identifier}";
-            IDbCommand iDbCommand = new SqlCommand(query, Header.SqlConnection);
-            IDataReader iDataReader = iDbCommand.ExecuteReader();
-            while (iDataReader.Read()) work.Teacher = iDataReader
-                    .GetString(1);
-            iDataReader.Close();
+            int? subjId = homework.GetSubjId();
+            passSubj? endSubj = passSubj.Find(subject => subject.Id == subjId);
+            if (endSubj is null)
+            {
+                currSubj? actSubj = currSubj.Find(subject => subject.Id == subjId);
+                homework.SetUserId(actSubj is null ? null : actSubj.userId);
+            }
+            else homework.SetUserId(endSubj.userId);
+        }
+        public static void SelFromUs(List<users> users, Homework homework)
+        {
+            users? client = users.Find(customer => customer.Id == homework
+                .GetUserId());
+            homework.Teacher = client is null ? null : client.username;
         }
     }
 }

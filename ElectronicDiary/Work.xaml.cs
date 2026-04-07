@@ -1,5 +1,4 @@
-﻿using Microsoft.Data.SqlClient;
-using System.Windows;
+﻿using System.Windows;
 
 namespace ElectronicDiary
 {
@@ -20,13 +19,14 @@ namespace ElectronicDiary
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             string? maintText = maintenance.Text;
-            string sql = "insert into checking(userId, homId, "
-                + $"content) values({this.Diary.Identifier}, {this
-                .HomId}, "
-                + $"'{maintText}')";
             if (maintText == string.Empty) return;
-            SqlCommand sqlCommand = new SqlCommand(sql, Header.SqlConnection);
-            sqlCommand.ExecuteNonQuery();
+            checking checking = new checking();
+            checking.userId = (int)this.Diary.Identifier!;
+            checking.homId = this.HomId;
+            checking.content = maintText;
+            Header.Db.checking
+                .InsertOnSubmit(checking);
+            Header.Db.SubmitChanges();
             Header.Load(this.Diary);
             Close();
         }
