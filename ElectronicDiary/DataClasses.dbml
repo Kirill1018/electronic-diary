@@ -76,12 +76,6 @@
       <Association Name="users_passSubj" Member="users" ThisKey="userId" OtherKey="Id" Type="users" IsForeignKey="true" />
     </Type>
   </Table>
-  <Table Name="dbo.statuses" Member="statuses">
-    <Type Name="statuses">
-      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
-      <Column Name="name" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
-    </Type>
-  </Table>
   <Table Name="dbo.users" Member="users">
     <Type Name="users">
       <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />

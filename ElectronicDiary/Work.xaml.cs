@@ -7,13 +7,13 @@ namespace ElectronicDiary
     /// </summary>
     public partial class Work : Window
     {
-        int HomId { get; set; }
         Diary Diary { get; set; }
+        int HomId { get; set; }
         public Work(int homId, Diary diary)
         {
             InitializeComponent();
-            this.HomId = homId;
             this.Diary = diary;
+            this.HomId = homId;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

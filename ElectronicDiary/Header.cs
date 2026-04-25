@@ -7,7 +7,8 @@ namespace ElectronicDiary
         {
             List<users> users = Db.users.ToList<users>();
             int? identifier = diary.Identifier;
-            users user = users.Find(customer => customer.Id == identifier)!;
+            users? user = users.Find(customer => customer.Id == identifier);
+            if (user is null) return;
             int? groupId = user.groupId;
             List<passSubj> passSubj = Db.passSubj.ToList<passSubj>(), passSubjByGroup = passSubj
                 .FindAll(subjects => (subjects.groupId == groupId && subjects.isArch == false));

@@ -18,7 +18,8 @@ namespace ElectronicDiary
             List<users> users = Header.Db.users
                 .ToList<users>();
             users? client = users.Find(customer => (customer.username == user
-            .Text && customer.password == parole.Text));
+            .Text && customer.password == parole.Text
+            && customer.isStud));
             if (client is null) return;
             NavigationWindow navigationWindow = new NavigationWindow();
             navigationWindow.Content = new Diary(client.Id);

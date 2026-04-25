@@ -2,7 +2,7 @@
 {
     internal interface IDataSourc
     {
-        public static void Add(List<lessons> lessBySubj, List<Lesson> lessons) { foreach (lessons lesson in lessBySubj)
+        public static void Add(List<lessons> lessonsBySubj, List<Lesson> lessons) { foreach (lessons lesson in lessonsBySubj)
             {
                 DateTime dateTime = lesson.date;
                 Lesson tutorial = new Lesson(lesson.Id, lesson.subjId,

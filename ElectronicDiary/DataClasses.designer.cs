@@ -51,9 +51,6 @@ namespace ElectronicDiary
     partial void InsertpassSubj(passSubj instance);
     partial void UpdatepassSubj(passSubj instance);
     partial void DeletepassSubj(passSubj instance);
-    partial void Insertstatuses(statuses instance);
-    partial void Updatestatuses(statuses instance);
-    partial void Deletestatuses(statuses instance);
     partial void Insertusers(users instance);
     partial void Updateusers(users instance);
     partial void Deleteusers(users instance);
@@ -142,14 +139,6 @@ namespace ElectronicDiary
 			get
 			{
 				return this.GetTable<passSubj>();
-			}
-		}
-		
-		public System.Data.Linq.Table<statuses> statuses
-		{
-			get
-			{
-				return this.GetTable<statuses>();
 			}
 		}
 		
@@ -1732,92 +1721,6 @@ namespace ElectronicDiary
 						this._userId = default(int);
 					}
 					this.SendPropertyChanged("users");
-				}
-			}
-		}
-		
-		public event PropertyChangingEventHandler PropertyChanging;
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		protected virtual void SendPropertyChanging()
-		{
-			if ((this.PropertyChanging != null))
-			{
-				this.PropertyChanging(this, emptyChangingEventArgs);
-			}
-		}
-		
-		protected virtual void SendPropertyChanged(String propertyName)
-		{
-			if ((this.PropertyChanged != null))
-			{
-				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
-		}
-	}
-	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.statuses")]
-	public partial class statuses : INotifyPropertyChanging, INotifyPropertyChanged
-	{
-		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-		
-		private int _Id;
-		
-		private string _name;
-		
-    #region Определения метода расширяемости
-    partial void OnLoaded();
-    partial void OnValidate(System.Data.Linq.ChangeAction action);
-    partial void OnCreated();
-    partial void OnIdChanging(int value);
-    partial void OnIdChanged();
-    partial void OnnameChanging(string value);
-    partial void OnnameChanged();
-    #endregion
-		
-		public statuses()
-		{
-			OnCreated();
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-		public int Id
-		{
-			get
-			{
-				return this._Id;
-			}
-			set
-			{
-				if ((this._Id != value))
-				{
-					this.OnIdChanging(value);
-					this.SendPropertyChanging();
-					this._Id = value;
-					this.SendPropertyChanged("Id");
-					this.OnIdChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_name", DbType="NVarChar(MAX) NOT NULL", CanBeNull=false)]
-		public string name
-		{
-			get
-			{
-				return this._name;
-			}
-			set
-			{
-				if ((this._name != value))
-				{
-					this.OnnameChanging(value);
-					this.SendPropertyChanging();
-					this._name = value;
-					this.SendPropertyChanged("name");
-					this.OnnameChanged();
 				}
 			}
 		}
