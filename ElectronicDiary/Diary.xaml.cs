@@ -9,8 +9,8 @@ namespace ElectronicDiary
     /// </summary>
     public partial class Diary : Page
     {
-        public int? Identifier { get; set; }
-        public Diary(int? identifier)
+        public int Identifier { get; set; }
+        public Diary(int identifier)
         {
             InitializeComponent();
             this.Identifier = identifier;
@@ -36,7 +36,7 @@ namespace ElectronicDiary
             if (openFileDialog.ShowDialog() == true)
             {
                 checking checking = new checking();
-                checking.userId = (int)this.Identifier!;
+                checking.userId = this.Identifier;
                 checking.homId = homework.GetId();
                 checking.binFile = File.ReadAllBytes(openFileDialog
                     .FileName);

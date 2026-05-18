@@ -6,31 +6,30 @@ namespace ElectronicDiary
         public static void Load(Diary diary)
         {
             List<users> users = Db.users.ToList<users>();
-            int? identifier = diary.Identifier;
+            int identifier = diary.Identifier;
             users? user = users.Find(customer => customer.Id == identifier);
-            if (user is null) return;
-            int? groupId = user.groupId;
+            int? groupId = user is null ? null : user.groupId;
             List<passSubj> passSubj = Db.passSubj.ToList<passSubj>(), passSubjByGroup = passSubj
-                .FindAll(subjects => (subjects.groupId == groupId && subjects.isArch == false));
+                .FindAll(subject => subject.groupId == groupId && subject.isArch == false);
             List<string> namOfPassSubj = new List<string>(), namOfCurrSubj = new List<string>();
             foreach (passSubj subject in passSubjByGroup) namOfPassSubj.Add(subject.name);
             diary.endSubj.ItemsSource = namOfPassSubj;
             List<currSubj> currSubj = Db.currSubj.ToList<currSubj>(), currSubjByGroup = currSubj
-                .FindAll(subjects => subjects.groupId == groupId);
+                .FindAll(subject => subject.groupId == groupId);
             foreach (currSubj subject in currSubjByGroup) namOfCurrSubj.Add(subject.name);
             diary.actSubj.ItemsSource = namOfCurrSubj;
             List<lessons> lessons = Db.lessons.ToList<lessons>();
             List<Lesson> tutList = new List<Lesson>();
             foreach (passSubj subject in passSubjByGroup)
             {
-                List<lessons> lessonsBySubj = lessons.FindAll(tutorial => (tutorial.isPass && tutorial
-                .subjId == subject.Id));
+                List<lessons> lessonsBySubj = lessons.FindAll(tutorial => tutorial.isPass && tutorial
+                .subjId == subject.Id);
                 IDataSourc.Add(lessonsBySubj, tutList);
             }
             foreach (currSubj subject in currSubjByGroup)
             {
-                List<lessons> lessonsBySubj = lessons.FindAll(tutorial => (tutorial.isPass && tutorial
-                .subjId == subject.Id));
+                List<lessons> lessonsBySubj = lessons.FindAll(tutorial => tutorial.isPass && tutorial
+                .subjId == subject.Id);
                 IDataSourc.Add(lessonsBySubj, tutList);
             }
             foreach (Lesson lesson in tutList)
@@ -40,7 +39,7 @@ namespace ElectronicDiary
                 if (endSubj is null)
                 {
                     currSubj? actSubj = currSubj.Find(subject => subject.Id == subjId);
-                    users? client = actSubj is null ? null : users.Find(customer => customer.Id == actSubj
+                    users? client = users.Find(customer => customer.Id == actSubj!
                     .userId);
                     lesson.Teacher = client is null ? null : client.username;
                 }
@@ -54,8 +53,8 @@ namespace ElectronicDiary
             List<marks> marks = Db.marks.ToList<marks>();
             foreach (Lesson lesson in tutList)
             {
-                marks? mark = marks.Find(rating => (rating.lessId == lesson
-                .GetId() && rating.userId == identifier));
+                marks? mark = marks.Find(rating => rating.lessId == lesson
+                .GetId() && rating.userId == identifier);
                 lesson.Mark = mark is null ? null : mark.number;
             }
             diary.tutorials.ItemsSource = tutList;
@@ -63,10 +62,9 @@ namespace ElectronicDiary
                 .FindAll(homework => homework.userId == identifier);
             List<Homework> works = new List<Homework>(), worksWithPosMark = new List<Homework>(),
                 worksWithBadMark = new List<Homework>(), worksNeedToBeSubm = new List<Homework>();
-            foreach (checking checking in checkings)
+            foreach (checking checking in checkByUs)
             {
-                Homework homework = new Homework(checking.homId, checking.binFile,
-                    checking.content, null,
+                Homework homework = new Homework(checking.homId, null,
                     null, null,
                     null, null,
                     null, null,
@@ -82,11 +80,7 @@ namespace ElectronicDiary
                 homework.SetTask(work is null ? null : work.task);
                 homework.SetLessId(work is null ? null : work.lessId);
             }
-            foreach (Homework homework in works)
-            {
-                try { IDataSourc.SelFromLess(lessons, homework); }
-                catch (NullReferenceException) { }
-            }
+            foreach (Homework homework in works) IDataSourc.SelFromLess(lessons, homework);
             foreach (Homework homework in works) IDataSourc.SelFromSubj(homework, passSubj,
                 currSubj);
             foreach (Homework homework in works) IDataSourc.SelFromUs(users, homework);
@@ -100,13 +94,12 @@ namespace ElectronicDiary
             diary.homWithBadMark.ItemsSource = worksWithBadMark;
             foreach (Lesson lesson in tutList)
             {
-                List<homeworks> tasks = homeworks.FindAll(homework => homework.lessId == lesson
-                .GetId());
+                int lessId = lesson.GetId();
+                List<homeworks> tasks = homeworks.FindAll(homework => homework.lessId == lessId);
                 foreach (homeworks task in tasks)
                 {
-                    Homework homework = new Homework(task.Id, null,
-                        null, task.task,
-                        lesson.GetId(), task.deadline,
+                    Homework homework = new Homework(task.Id, task.task,
+                        lessId, task.deadline,
                         null, null,
                         null, null,
                         null, null,
@@ -116,30 +109,26 @@ namespace ElectronicDiary
             }
             foreach (Homework homework in works) for (int i = 0; i < worksNeedToBeSubm.Count; i++) if (homework.GetId() == worksNeedToBeSubm[i]
                         .GetId())
-                    {
-                        worksNeedToBeSubm.RemoveAt(i);
-                        i--;
-                    }
-            foreach (Homework homework in worksNeedToBeSubm)
             {
-                try { IDataSourc.SelFromLess(lessons, homework); }
-                catch (NullReferenceException) { }
+                worksNeedToBeSubm.RemoveAt(i);
+                i--;
             }
+            foreach (Homework homework in worksNeedToBeSubm) IDataSourc.SelFromLess(lessons, homework);
             foreach (Homework homework in worksNeedToBeSubm) IDataSourc.SelFromSubj(homework, passSubj,
                 currSubj);
             foreach (Homework homework in worksNeedToBeSubm) IDataSourc.SelFromUs(users, homework);
             for (int i = 0; i < worksNeedToBeSubm.Count; i++) if (worksNeedToBeSubm[i].GetDeadl() < DateTime
                     .Now)
-                {
-                    worksNeedToBeSubm.RemoveAt(i);
-                    i--;
-                }
+            {
+                worksNeedToBeSubm.RemoveAt(i);
+                i--;
+            }
             for (int i = 0; i < worksNeedToBeSubm.Count; i++) foreach (checking checking in checkings) if (checking.userId == identifier && checking
                         .homId == worksNeedToBeSubm[i].GetId())
-                    {
-                        worksNeedToBeSubm.RemoveAt(i);
-                        i--;
-                    }
+            {
+                worksNeedToBeSubm.RemoveAt(i);
+                i--;
+            }
             diary.homNeedToBeSubm.ItemsSource = worksNeedToBeSubm;
         }
     }

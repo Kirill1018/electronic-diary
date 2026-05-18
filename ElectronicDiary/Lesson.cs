@@ -4,12 +4,12 @@
     {
         int Id { get; set; }
         int SubjId { get; set; }
-        public string? Date { get; set; }
-        public string? Theme { get; set; }
+        public string Date { get; set; }
+        public string Theme { get; set; }
         public string? Teacher { get; set; }
         public int? Mark { get; set; }
         public Lesson(int id, int subjId,
-            string? date, string? theme,
+            string date, string theme,
             string? teacher, int? mark)
         {
             Id = id;

@@ -10,7 +10,7 @@
         <TextBlock>имя пользователя</TextBlock>
         <TextBox x:Name="user"></TextBox>
         <TextBlock>пароль</TextBlock>
-        <TextBox x:Name="parole"></TextBox>
+        <TextBox x:Name="parole" FontFamily="./#password"></TextBox>
         <Button Click="Button_Click">войти</Button>
     </StackPanel>
 </Window>

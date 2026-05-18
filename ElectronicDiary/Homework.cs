@@ -1,12 +1,8 @@
-﻿using System.Data.Linq;
-
-namespace ElectronicDiary
+﻿namespace ElectronicDiary
 {
     internal class Homework
     {
         int Id { get; set; }
-        Binary? BinFile { get; set; }
-        string? Content { get; set; }
         string? Task { get; set; }
         int? LessId { get; set; }
         DateTime? Deadline { get; set; } = new DateTime();
@@ -17,8 +13,7 @@ namespace ElectronicDiary
         public string? Teacher { get; set; }
         public int? Mark { get; set; }
         public string? Comment { get; set; }
-        public Homework(int id, Binary? binFile,
-            string? content, string? task,
+        public Homework(int id, string? task,
             int? lessId, DateTime? deadline,
             int? subjId, string? dateTimeOfLess,
             string? theme, int? userId,
@@ -26,8 +21,6 @@ namespace ElectronicDiary
             string? comment)
         {
             Id = id;
-            BinFile = binFile;
-            Content = content;
             Task = task;
             LessId = lessId;
             Deadline = deadline;

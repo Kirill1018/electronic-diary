@@ -21,7 +21,7 @@ namespace ElectronicDiary
             string? maintText = maintenance.Text;
             if (maintText == string.Empty) return;
             checking checking = new checking();
-            checking.userId = (int)this.Diary.Identifier!;
+            checking.userId = this.Diary.Identifier;
             checking.homId = this.HomId;
             checking.content = maintText;
             Header.Db.checking

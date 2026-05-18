@@ -15,16 +15,19 @@ namespace ElectronicDiary
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            List<users> users = Header.Db.users
+            try
+            {
+                List<users> users = Header.Db.users
                 .ToList<users>();
-            users? client = users.Find(customer => (customer.username == user
-            .Text && customer.password == parole.Text
-            && customer.isStud));
-            if (client is null) return;
-            NavigationWindow navigationWindow = new NavigationWindow();
-            navigationWindow.Content = new Diary(client.Id);
-            navigationWindow.Show();
-            Close();
+                users? client = users.Find(customer => customer.username == user
+                .Text && customer.password == parole.Text
+                && customer.isStud);
+                NavigationWindow navigationWindow = new NavigationWindow();
+                navigationWindow.Content = new Diary(client!.Id);
+                navigationWindow.Show();
+                Close();
+            }
+            catch (NullReferenceException) { }
         }
     }
 }
